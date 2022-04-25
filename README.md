@@ -56,3 +56,15 @@ server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
 ```
+
+# Ajouter un package via npm
+Dans un premier temps, on ajoute la 'notion' de package dans le projet.  
+```bash
+npm init
+```
+
+Ensuite on installe dans le projet le package souhaité (ici nodemon)
+```bash
+npm install nodemon --Dev
+```
+
