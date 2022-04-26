@@ -7,7 +7,7 @@ Cours Node.js avec la classe A4 IWM M2
   <summary><h2 style="display: inline-block">Table des matières</h2></summary>
   <ol>
     <li>
-      <a href="#prerequis">Prérequis</a>
+      <a href="#prérequis">Prérequis</a>
     </li>
     <li>
       <a href="#faire-son-serveur">Faire son serveur</a>
