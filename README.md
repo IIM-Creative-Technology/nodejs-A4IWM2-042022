@@ -193,6 +193,8 @@ Pour toutes ces commandes, il faut se placer dans le dossier `/docker`.
 En développement :
 `docker-compose up -d`
 
+On peut ensuite accéder au serveur depuis l'extérieur du conteneur à l'adresse : `localhost:3000`
+
 Après avoir installé un module npm via `npm i`, reconstruire les conteneurs en ligne de commande avec :
 `docker-compose up -d --build`
 
