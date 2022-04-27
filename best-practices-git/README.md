@@ -22,7 +22,39 @@ Cours Node.js avec la classe A4 IWM M2
 
 
 ## Commitizen
+![](commit_names.png)
 
+Evitons ça 👆
+
+Commitizen aide à formatter ses messages Git avec un script interactif.
+
+Installer commitizen et le package pour formatter :
+`npm i -D commitizen cz-conventional-changelog`
+
+Ajouter cette entrée au package.json :
+```json5
+// package.json
+"config": {
+    "commitizen": {
+        "path": "cz-conventional-changelog"
+    }
+}
+```
+
+Ensuite, au lieu de `git commit`, on utilise `npx cz` pour commit en se laissant guider par le script :
+![](cz.png)
+
+Si on ne veut pas bouleverser ses habitudes, il est possible d'utiliser `git commit` avec quelques réglages supplémentaires :
+ * aller dans le dossier caché de git `.git/`
+ * aller dans le dossier de hooks `hooks/` : ce sont des scripts exécutés automatiquement lors de certains évènements de Git.
+ * ajouter le fichier `prepare-commit-msg`
+ * mettre ce contenu :
+```shell
+#!/bin/bash
+exec < /dev/tty && node_modules/.bin/cz --hook || true
+```
+
+Ainsi commitizen sera appelé automatiquement à chaque fois qu'on fera `git commit` !
 
 ## Template de PR
 Il n'est pas facile de relire la PR d'un autre, et ceci d'autant plus si elle manque d'une description suffisamment claire.
