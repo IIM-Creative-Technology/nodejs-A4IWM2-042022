@@ -157,7 +157,7 @@ A la place, je peux juste repartir d’un package-lock potentiellement un peu vi
 Par exemple, si je suis en train de faire une PR sur master, je peux récupérer le dernier package-lock de master:
 `git checkout origin/master package-lock.json`
 
-Solution alternative pour être sûr de pas faire des conneries:
+Solution alternative pour être sûr de pas faire des bêtises:
 
 Ensuite, je peux lancer un `npm install` sereinement. Seuls les nouveaux packages vont être rajoutés au package-lock.
 
