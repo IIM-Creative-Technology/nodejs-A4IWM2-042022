@@ -82,7 +82,7 @@ Pour savoir quelle version installer lors d’un `npm install`, **npm** lit à l
 
 - Que fait **npm install** ?
     
-    **npm** installe la `2.6.2` (la matching version la plus récente), puis remplace le `package.lock` par:
+    **npm** installe la `2.6.2` (la matching version la plus récente), puis remplace le contenu du `package-lock.json` par:
     
     ```jsx
     {
