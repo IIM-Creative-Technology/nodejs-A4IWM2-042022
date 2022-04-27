@@ -19,7 +19,18 @@ Cours Node.js avec la classe A4 IWM M2
 </details>
 
 ## Git Flow
+Git Flow est une philosophie de gestion des branches dans un dépôt Git. [(Cf. tutoriel ici.)](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
 
+Le principe est le suivant :
+* la branche 'main' est réservée à l'historique officiel des releases
+* la branche 'develop' est réservée pour le développement (d'où le nom) de la prochaine version
+* chaque feature doit être développée sur sa branche à part, en partant de 'develop'
+* une fois qu'on a suffisamment de features, on crée une branche propre à une release, qui sera peaufinée, puis mergée avec 'main'
+* les 'hotfix' sont des branches dédiées pour résoudre les bugs, accrochées à 'main' contrairement aux branches de features
+
+Il existe un plugin git [(lien d'installation)](https://github.com/nvie/gitflow/wiki/Installation) pour s'en servir en ligne de commande.
+
+Le graphique [ici](https://danielkummer.github.io/git-flow-cheatsheet/index.html) explique très bien les différentes commandes à utiliser.
 
 ## Commitizen
 ![](commit_names.png)
