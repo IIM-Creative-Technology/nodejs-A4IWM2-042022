@@ -15,6 +15,9 @@ Cours Node.js avec la classe A4 IWM M2
         <li><a href="#built-with">Built With</a></li>
       </ul> -->
     </li>
+    <li>
+      <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
+    </li>
   </ol>
 </details>
 
@@ -55,4 +58,32 @@ La fonction de callback permet de nous assurer de la bonne exécution de notre c
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
+```
+
+# Enlever les erreurs CORS
+
+## Qu'est-ce qu'une erreur CORS
+
+Tout d'abord, CORS est un acronyme signifiant "Cross Origin Resource Sharing".
+
+Cela consiste à ajouter des en-têtes HTTP afin d'accéder par exemple à une API située sur
+un serveur distant. 
+Ainsi, le user agent procède à une requête HTTP "cross-origin" lorsqu'il souhaite accéder 
+à un domaine, un port ou un protocole différent de la page courante.
+
+Il apparaît donc des erreurs CORS lorsque nous n'avons pas les droits d'accéder notamment à des URL distantes.
+
+## Résoudre les erreurs CORS dans un projet NodeJS-Express
+
+Il faut dans un premier temps installer un middleware que l'on retrouve dans un simple paquet NPM.
+```bash
+npm i cors
+```
+Ensuite, il suffit d'ajouter à la racine de votre projet les lignes suivantes :
+```bash
+var express = require('express');
+var cors = require('cors');
+var app = express();
+
+app.use(cors());
 ```
