@@ -35,6 +35,17 @@ Cours Node.js avec la classe A4 IWM M2
         <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
       </ul>
     </li>
+    <li>
+      <a href="#deployer-son-projet-node">Déployer son projet node</a>
+      <ul>
+        <li><a href="#heroku">Heroku</a></li>
+            <ul>
+                <li><a href="#creation-de-vos-environnements">Création de vos environnements</a></li>
+                <li><a href="#liaison-du-projet-avec-heroku">Liaison du projet avec Heroku</a></li>        
+                <li><a href="#deployer-votre-projet">Déployer votre projet</a></li>   
+            </ul>
+      </ul>
+    </li>
   </ol>
 </details>
 
