@@ -39,17 +39,6 @@ Cours Node.js avec la classe A4 IWM M2
       <a href="#utiliser-le-body-parser">Utiliser le body-parser</a>
     </li>
     <li>
-      <a href="#dockeriser-son-application">Dockeriser son application</a>
-      <ul>
-        <li><a href="#architecture-du-projet">Architecture du projet</a></li>
-        <li><a href="#conteneur-base-de-données">Conteneur base de données</a></li>
-        <li><a href="#conteneur-serveur">Conteneur serveur</a></li>        
-        <li><a href="#fichier-env">Fichier .env</a></li>        
-        <li><a href="#en-production">En production</a></li>       
-        <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
-      </ul>
-    </li>
-    <li>
       <a href="#déployer-son-projet-node">Déployer son projet node</a>
       <ul>
         <li><a href="#heroku">Heroku</a></li>
