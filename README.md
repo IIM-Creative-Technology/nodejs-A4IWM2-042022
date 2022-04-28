@@ -11,9 +11,12 @@ Cours Node.js avec la classe A4 IWM M2
     </li>
     <li>
       <a href="#faire-son-serveur">Faire son serveur</a>
-      <!-- <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul> -->
+    </li>
+    <li>
+      <a href="#ajouter-un-package-via-npm">Ajouter un package via npm</a>
+    </li>
+    <li>
+      <a href="#les-exports-en-javascript">Les exports en javascript</a>
     </li>
     <li>
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
@@ -60,6 +63,7 @@ server.listen(port, hostname, () => {
 });
 ```
 
+<<<<<<< HEAD
 # Enlever les erreurs CORS
 
 ## Qu'est-ce qu'une erreur CORS
@@ -87,3 +91,50 @@ var app = express();
 
 app.use(cors());
 ```
+=======
+# Ajouter un package via npm
+Dans un premier temps, on ajoute la 'notion' de package dans le projet.  
+```bash
+npm init
+```
+
+Ensuite on installe dans le projet le package souhaité (ici nodemon)
+```bash
+npm install nodemon --Dev
+```
+
+`nodemon` permet de faciliter le développement en relançant automatiquement le serveur lors de modifications des fichiers sources. On peut l'ajouter aux scripts npm:
+```json
+"scripts": {
+ "dev": "nodemon <nom_du_fichier_principal>"
+}
+```
+
+Puis le lancer avec `npm run dev`
+
+# Les exports en javascript
+Dans un fichier appart créer une fonction
+```js
+function returnHelloWorld() {
+    const helloWorldObject = {
+        msg: 'Hello World !'
+    }
+    return JSON.stringify(helloWorldObject);
+}
+```
+
+Dans ce meme fichier exporter la fonction que l'on vient de créer
+```js
+module.exports = {returnHelloWorld};
+```
+
+Importer dans le fichier souhaité l'ensemble des exports du fichier
+```js
+const functions = require('./functions');
+```
+
+Il est maintenant possible d'utiliser les fonctions exportés dans le fichier importé
+```js
+functions.returnHelloWorld()
+```
+>>>>>>> 7e86770bc67dac25034d5f91f72c672ecb4afd35
