@@ -47,6 +47,8 @@ Cours Node.js avec la classe A4 IWM M2
     </li>
     <li>
       <a href="/best-practices-git">Bonnes pratiques git</a>
+    </li>
+    <li>
       <a href="#ce-que-nous-avons-vu">Ce que nous avons vu</a>
     </li>
   </ol>
