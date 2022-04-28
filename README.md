@@ -111,7 +111,7 @@ functions.returnHelloWorld()
 
 # Upload une image avec Multer
 
-Pour upload une image via un `<input type="file" />`, il faut installer le package [Multer](https://www.npmjs.com/package/multer) dans votre projet. Notons également que le package `express` doit être initié. 
+Pour upload une image via un `<input type="file" />`, il faut installer le package [Multer](https://www.npmjs.com/package/multer) dans votre projet. Notons que package `express` doit déjà être installé au sein du projet pour le bon fonctionnement de Multer.
 ```
 npm i multer
 ``` 
