@@ -442,6 +442,7 @@ const startServer = async () => {
 };
 
 startServer();
+```
 # Déployer son projet node
 
 ## Heroku
