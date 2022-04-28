@@ -345,6 +345,7 @@ const upload = multer({
 app.post('/upload', (req, res) => {
   upload(req, res)
 });
+```
 
 # Enlever les erreurs CORS
 
