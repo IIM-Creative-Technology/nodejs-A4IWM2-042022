@@ -32,6 +32,15 @@ Cours Node.js avec la classe A4 IWM M2
         <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
       </ul>
     </li>
+    <li>
+      <a href="#tester-avec-jest-et-supertest">Tester avec Jest et Supertest</a>
+      <ul>
+        <li><a href="#jest-c-est-quoi">Jest c'est quoi ?</a></li>
+        <li><a href="#installation-de-jest">Installation de Jest</a></li>
+        <li><a href="#mon-premier-test">Mon premier test</a></li>        
+        <li><a href="#utilisation-de-supertest">Utilisation de Supertest</a></li>             
+      </ul>
+    </li>
   </ol>
 </details>
 
@@ -294,4 +303,105 @@ var cors = require('cors');
 var app = express();
 
 app.use(cors());
+```
+
+# Tester avec Jest et Supertest
+
+## Jest c'est quoi ?
+
+Jest est un framework permettant de tester son code JavaScript afin de garantir un code de qualité avec la maximum de simplicité.
+
+Il est possible d'utiliser Jest avec n'importe quel projet utilisant : Babel, TypeScript, Node, React, Angular, Vue, etc...
+
+## Installation de Jest
+
+Dans un premier temps, vous devez installer Jest (NPM ou Yarn) :
+
+Avec NPM :
+```bash
+npm install --save-dev jest
+```
+Avec Yarn :
+```bash
+yarn add --dev jest
+```
+
+## Mon premier test
+
+Avant de tester une route, nous allons tester le retour d'un simple calcul pour découvrir la syntaxe de Jest.
+
+Dans un premier temps créer un dossier tests avec un fichier main.test.js.
+
+```bash
+test('Additionner 5 + 7', () => {
+  expect(5 + 7).toBe(12);
+});
+```
+
+Ensuite, ouvrez votre package.json et ajouter le script suivant :
+
+```bash
+{
+  "scripts": {
+    "test": "jest"
+  }
+}
+```
+
+Lancer `npm test` ou `yarn test`
+
+Résultat :
+```bash
+ PASS  test/main.test.js
+  ✓ Additionner 5 + 7 (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+```
+
+## Utilisation de Supertest
+
+Supertest vous permettra d'aller tester des routes préalablement configurées. Vous pourrez passer les paramètres souhaités afin de tester n'importe quelle route.
+
+Installons Supertest :
+
+Avec NPM :
+```bash
+npm install supertest --save-dev
+```
+Avec Yarn :
+```bash
+yarn add --dev supertest
+```
+
+Ensuite il faut ajouter Supertest au fichier de test préalablement crée, ainsi que vos routers déjà configurés.
+```bash
+const express = require("express");
+const request = require("supertest");
+
+const app = express();
+
+const router = require("../routes/main");
+```
+
+Nous allons tester notre page d'accueil, celle-ci renvoi "Hello World!"
+Pour que le test fonctionne, le test doit renvoyer le statut `200` ainsi que le contenu `Hello World!`
+
+```bash
+app.use("/", router);
+
+test("Test la route '/', doit renvoyer Hello World!", async () => {
+  const res = await request(app).get("/");
+  expect(res.statusCode).toBe(200);
+  expect(res.text).toBe("Hello World!");
+});
+```
+
+Résultat :
+```bash
+ PASS  test/main.test.js
+  ✓ test if get request on '/' respond Hello World! (32 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
 ```
