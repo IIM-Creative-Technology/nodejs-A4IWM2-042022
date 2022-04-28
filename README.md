@@ -21,6 +21,9 @@ Cours Node.js avec la classe A4 IWM M2
     <li>
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
     </li>
+    <li>
+      <a href="#intégrer-typescript">Intégrer TypeScript</a>
+    </li>
   </ol>
 </details>
 
@@ -136,3 +139,86 @@ var app = express();
 
 app.use(cors());
 ```
+
+## Intégrer TypeScript
+[TypeScript](https://typescriptlang.org/) est un sur-langage de JavaScript dont le but est de permettre de typer les éléments JS. Il est extrêmement répandu dans l'écosystème JavaScript de nos jours. 
+
+### Typer son code
+Prenons un exemple simple : soit variable `id` étant un nombre hexadécimal, et, pour récupérer l'id suivant, on l'incrémente.
+
+```ts
+const id = "a25f0";
+const getNextId = (id) => id + 1;
+```
+
+Pas de souci, n'est-ce pas ?
+
+Seulement, si on regarde le résultat... 
+```ts
+const id = "a25f0";
+getNextId(id) // "a25f01" au lieu de "a25f1" ! 👎👎
+```
+
+L'id a été traité comme un string, et donc `id + 1` a été traité comme une concaténation au lieu d'une addition 🤨
+
+Il aurait fallu pouvoir s'assurer que `getNextId` prend bien un nombre en paramètre, et c'est là que TypeScript se rend utile.
+
+Il suffit d'ajouter une petite annotation pour indiquer le type.
+```ts
+const getNextId = (id: number) => id + 1; // le paramètre "id" est de type "number"  
+```
+
+On peut même aller plus loin et indiquer le type du retour de la fonction !
+```ts
+const getNextId = (id: number): number => id + 1; // la fonction renvoie un "number"
+```
+
+Retournons à notre id : 
+```ts
+const id: number = "a25f0"; // Error: Type 'string' is not assignable to type 'number'. ts(2322) 
+```
+On voit directement le problème ici : le contenu de la variable id n'est pas du bon type !
+
+On peut donc corriger le problème en le convertissant en nombre et continuer à coder en toute sérénité :)
+```ts
+const id: number = parseInt("a25f0", 16); // no problemo !
+const getNextId = (id: number): number => id + 1;
+
+getNextId(id); // a25f1 👍👍
+```
+
+[Exemple du code sur Codesandbox.io](https://codesandbox.io/s/cours-typescript-9433qz?file=/src/index.ts)
+
+### Compiler TypeScript
+On ne peut pas exécuter directement du TypeScript : il faut le compiler en JavaScript avec de le faire exécuter.
+
+Il existe de nombreux outils (Webpack + Babel, `tsc` puis `node`...), mais dans le cadre de Node, le plus simple est [ts-node](https://www.npmjs.com/package/ts-node).
+
+Il se charge de compiler puis d'exécuter un fichier `.ts`, de la même manière que node exécute un `.js`.
+
+Pour développer, il existe une version intégrant `nodemon` : [ts-node-dev](https://www.npmjs.com/package/ts-node).
+
+```json5
+// package.json
+{
+  "scripts": {
+    "dev": "tsnd index.ts",
+    "prod": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.2",
+    // ...
+  }
+}
+```
+
+### Les types des librairies importées
+Bien plus que le code de notre équipe, il est intéressant d'avoir des types sur les librairies qu'on installe depuis npm 😉
+
+Certaines sont écrites en TS, et donc les types sont déjà intégrés tels quels. Super !
+![](typescript/integrated_ts.png)
+
+Pour d'autres, il est nécessaire de les récupérer via un autre package (typiquement avec `npm i -D @types/<nom_de_la_lib>`).
+![](typescript/external_ts.png)
+
+Pour info, @types vient du dépôt [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) qui est open source !
