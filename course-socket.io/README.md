@@ -1,6 +1,10 @@
-# Socket.io
+# Socket.io 🚀  
 
-Socket.io est un module de node permettant de creer des WebSocket. Ces memes WebSocket sont en fait des connexions bi-directionnelles entre le client et le serveur. Pour ce genre de requete on utilise pas le protocole HTTP mais le protocole TCP.
+Socket.io est un module de node permettant de creer des WebSocket.
+
+
+Ces memes WebSocket sont en fait des connexions bi-directionnelles entre le client et le serveur. Pour ce genre de requete on utilise pas le protocole **HTTP** mais le protocole **WebSocket**.
+
 Ce qui fait que cette requetes est différentes d'une http est qu'elle n'a pas besoin d'etre exécuté que par le client pour recevoir des données du serveur.
 
 Imaginons deux cas concrets :
@@ -8,7 +12,7 @@ Imaginons deux cas concrets :
 
 <div>
 <img src="images/HTTP-protocol.png"
-     alt="Markdown Monster icon"
+     alt="http protocol"
    />
 </div>
 
@@ -18,10 +22,12 @@ Le client fait une requete au serveur qui va la traiter en renvoyer le resultat.
 données au client sans qu'il n'emmette de requete
 <div>
 <img src="images/web-socket-protocol.png"
-     alt="Markdown Monster icon"
+     alt="web socket protocol"
    />
 </div>
 
-
 C'est sur ce principe que se base Socket.io 
-et c'est ce qui fait que chaque utilisateurs peuvent etre connecté sur un meme url et recevoir les données simultanéement
+et c'est ce qui fait que chaque utilisateurs peuvent etre connecté sur un meme url et recevoir les données simultanément.
+
+Pour plus d'information, vous pouvez consulter la [documentation officielle](https://socket.io/docs/v4)
+
