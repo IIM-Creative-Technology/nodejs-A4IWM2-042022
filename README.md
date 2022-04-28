@@ -13,6 +13,17 @@ Cours Node.js avec la classe A4 IWM M2
       <a href="#faire-son-serveur">Faire son serveur</a>
     </li>
     <li>
+      <a href="#dockeriser-son-application">Dockeriser son application</a>
+      <ul>
+        <li><a href="#architecture-du-projet">Architecture du projet</a></li>
+        <li><a href="#conteneur-base-de-données">Conteneur base de données</a></li>
+        <li><a href="#conteneur-serveur">Conteneur serveur</a></li>        
+        <li><a href="#fichier-env">Fichier .env</a></li>        
+        <li><a href="#en-production">En production</a></li>       
+        <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
+      </ul>
+    </li>
+    <li>
       <a href="#ajouter-un-package-via-npm">Ajouter un package via npm</a>
     </li>
     <li>
@@ -23,17 +34,6 @@ Cours Node.js avec la classe A4 IWM M2
     </li>
     <li>
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
-    </li>
-    <li>
-      <a href="#dockeriser-son-application">Dockeriser son application</a>
-      <ul>
-        <li><a href="#architecture-du-projet">Architecture du projet</a></li>
-        <li><a href="#conteneur-base-de-données">Conteneur base de données</a></li>
-        <li><a href="#conteneur-serveur">Conteneur serveur</a></li>        
-        <li><a href="#fichier-env">Fichier .env</a></li>        
-        <li><a href="#en-production">En production</a></li>       
-        <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
-      </ul>
     </li>
   </ol>
 </details>
