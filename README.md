@@ -25,7 +25,6 @@ Cours Node.js avec la classe A4 IWM M2
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
     </li>
     <li>
-<<<<<<< HEAD
       <a href="#dockeriser-son-application">Dockeriser son application</a>
       <ul>
         <li><a href="#architecture-du-projet">Architecture du projet</a></li>
@@ -48,9 +47,7 @@ Cours Node.js avec la classe A4 IWM M2
     </li>
     <li>
       <a href="/best-practices-git">Bonnes pratiques git</a>
-=======
       <a href="#ce-que-nous-avons-vu">Ce que nous avons vu</a>
->>>>>>> 6a2d45d (docs(doc): Add seeing notions and link to go to it)
     </li>
   </ol>
 </details>
