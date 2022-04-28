@@ -7,19 +7,10 @@ Cours Node.js avec la classe A4 IWM M2
   <summary><h2 style="display: inline-block">Table des matières</h2></summary>
   <ol>
     <li>
-      <a href="#prerequis">Prérequis</a>
+      <a href="#prérequis">Prérequis</a>
     </li>
     <li>
       <a href="#faire-son-serveur">Faire son serveur</a>
-    </li>
-    <li>
-      <a href="#ajouter-un-package-via-npm">Ajouter un package via npm</a>
-    </li>
-    <li>
-      <a href="#les-exports-en-javascript">Les exports en javascript</a>
-    </li>
-    <li>
-      <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
     </li>
     <li>
       <a href="#dockeriser-son-application">Dockeriser son application</a>
@@ -33,6 +24,35 @@ Cours Node.js avec la classe A4 IWM M2
       </ul>
     </li>
     <li>
+      <a href="#ajouter-un-package-via-npm">Ajouter un package via npm</a>
+    </li>
+    <li>
+      <a href="#les-exports-en-javascript">Les exports en javascript</a>
+    </li>
+    <li>
+      <a href="#upload-une-image-avec-multer">Upload une image avec Multer</a>
+    </li>
+    <li>
+      <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
+    </li>
+    <li>
+      <a href="#utiliser-le-body-parser">Utiliser le body-parser</a>
+    </li>
+    <li>
+      <a href="#déployer-son-projet-node">Déployer son projet node</a>
+      <ul>
+        <li><a href="#heroku">Heroku</a></li>
+            <ul>
+                <li><a href="#création-de-vos-environnements">Création de vos environnements</a></li>
+                <li><a href="#liaison-du-projet-avec-heroku">Liaison du projet avec Heroku</a></li>        
+                <li><a href="#déployer-votre-projet">Déployer votre projet</a></li>   
+            </ul>
+      </ul>
+    </li>
+    <li>
+      <a href="#intégrer-typescript">Intégrer TypeScript</a>
+    </li>
+    <li>
       <a href="#tester-avec-jest-et-supertest">Tester avec Jest et Supertest</a>
       <ul>
         <li><a href="#jest-c-est-quoi">Jest c'est quoi ?</a></li>
@@ -43,6 +63,20 @@ Cours Node.js avec la classe A4 IWM M2
     </li>
   </ol>
 </details>
+
+
+<details>
+  <summary><h2 style="display: inline-block">Autres documentations</h2></summary>
+  <ol>
+    <li>
+      <a href="/course-package-npm">NPM et les packages</a>
+    </li>
+    <li>
+      <a href="/best-practices-git">Bonnes pratiques git</a>
+    </li>
+  </ol>
+</details>
+
 
 # Prérequis
 
@@ -82,7 +116,6 @@ server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
 ```
-
 
 # Dockeriser son application
 On peut conteneuriser son application pour éviter d'avoir à installer tout sur son ordinateur, et optionnellement faciliter le déploiement.
@@ -277,6 +310,68 @@ Il est maintenant possible d'utiliser les fonctions exportés dans le fichier im
 functions.returnHelloWorld()
 ```
 
+# Upload une image avec Multer
+
+Pour upload une image via un `<input type="file" />`, il faut installer le package [Multer](https://www.npmjs.com/package/multer) dans votre projet. Notons que package `express` doit déjà être installé au sein du projet pour le bon fonctionnement de Multer.
+```
+npm i multer
+``` 
+
+Dans votre rendu HTML, créer un formulaire 
+```html
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" name="myFile">
+  <button type="submit">Submit</button>
+</form>
+```
+
+Puis au sein de votre arborescence, créer un dossier où seront stockées les images
+```
+mkdir -p public/uploads/
+```
+
+Après avoir servi le dossier de destination statique dans votre fichier javascript principal, indiquer le path de stockage des images ainsi que leur nom
+```js
+app.use(express.static('./public'));
+
+const storage = multer.diskStorage({
+  destination: './public/uploads/',
+  filename: function(req, file, cb){
+    cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+```
+
+Créer une méthode de validation du fichier, notamment pour l'extension de l'image
+```js
+function checkFileType(file, cb){
+  const filetypes = /jpeg|jpg|png|gif/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  if(mimetype && extname){
+    return cb(null,true);
+  } else {
+    cb('Error: Images Only!');
+  }
+}
+```
+
+Pour finir, créer une méthode d'upload et l'appeler au submit du formulaire 
+```js
+const upload = multer({
+  storage: storage,
+  limits:{fileSize: 1000000},
+  fileFilter: function(req, file, cb){
+    checkFileType(file, cb);
+  }
+}).single('myFile');
+
+app.post('/upload', (req, res) => {
+  upload(req, res)
+});
+```
+
 # Enlever les erreurs CORS
 
 ## Qu'est-ce qu'une erreur CORS
@@ -304,6 +399,202 @@ var app = express();
 
 app.use(cors());
 ```
+
+# Utiliser le body parser
+
+## L'erreur "req.body is undefined"
+
+Lorsqu'il vous arrive d'envoyer de la donnée via une méthode POST, le serveur reçoit le contenu de celle-ci via le paramètre ```(req)```.
+Précision : ```req``` fait ici référence à la requête envoyée par le client.
+
+```js
+app.post('/user', (req, res) => {
+    console.log("Reponse : ", req.body)
+```
+
+Pour que le serveur puisse lire le contenu de de la requête, nous devons accèder à son body via ```req.body```.
+
+Cependant, sur un serveur express, il se peut que votre donnée soit "undefined" lorsque vous essayez de ```console.log()``` celle-ci.
+
+## Résoudre cette erreur
+
+Cette erreur peut être résolu en utilisant le middleware ```body-parser```.
+Celui-ci va parser notre réponse. En outre, le ```body-parser``` va extraire le body de la requête reçue et l'exposer sur le ```req.body```
+
+## Installation
+
+```
+npm install body-parser --save
+```
+
+## Déclaration
+
+```js
+const bodyParser = require('body-parser');
+```
+Mettez ces deux ligne au début de votre code :
+```js
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+```
+
+## Mise à jour
+
+Cette méthode est surtout utile si vous utilisez une version d'Express.js inférieure à Express 4.
+
+Depuis Express 4, il est possible de fonctionner comme ceci :
+
+```js
+app.use(express.json());
+```
+
+# Déployer son projet node
+
+## Heroku
+
+### Création de vos environnements
+
+Heroku est une plateforme permettant le déploiement d'applications web. Elle est connu pour être l'une des plateformes la plus simple d'utilisation pour déployer un projet web.
+
+Dans cette partie nous allons voir le déploiement d'un projet node sur Heroku et nous allons nous baser sur la méthode de déploiement utilisant heroku-cli.
+
+Dans un premier temps il vous faudra faire une pipeline sur votre dashboard Heroku. Vous n'avez pas besoin de lié votre pipeline à votre git si vous utilisez heroku-cli.
+
+Vous allez par la suite devoir créer une application dans votre pipeline. Il s'agira de vos environnement. 
+
+N'oubliez pas d'installer le buildpack node à votre application dans les Settings de cette-derniére. 
+
+### Liaison du projet avec Heroku
+
+Maintenant vous allez devoir installer heroku-cli :
+
+MacOS :
+
+```bash
+w tap heroku/brew && brew install heroku
+```
+
+Windows :
+
+<a href="https://cli-assets.heroku.com/heroku-x64.exe">https://cli-assets.heroku.com/heroku-x64.exe</a>
+
+Linux (Ubuntu) :
+
+```bash
+curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+```
+
+Vous allez maintenant devoir vous connecter à votre compte Heroku et lier votre projet à votre application Heroku :
+
+```bash
+heroku login
+heroku git:remote -a <nom_de_votre_app>
+```
+
+### Déployer votre projet
+
+Créer un fichier Procfile à la racine de votre projet. Ce fichier va être le point d'entré de votre application. Il doit contenir la méthode de lancement de votre application. Exemple :
+
+```
+web: node app.js
+```
+
+Avant de déployer votre application veillez à bien avoir paramétré les variables d'environnement de votre application (Settings > Reveal Config Var)
+Vous pouvez maintenant déployer votre application :
+
+```bash
+git push heroku main
+```
+
+Vous pouvez obtenir des logs en direct de l'état de votre application grâce aux logs heroku. Pour récupérer les logs il vous suffit de faire :
+
+```bash
+heroku logs --tail
+```
+
+
+## Intégrer TypeScript
+[TypeScript](https://typescriptlang.org/) est un sur-langage de JavaScript dont le but est de permettre de typer les éléments JS. Il est extrêmement répandu dans l'écosystème JavaScript de nos jours. 
+
+### Typer son code
+Prenons un exemple simple : soit variable `id` étant un nombre hexadécimal, et, pour récupérer l'id suivant, on l'incrémente.
+
+```ts
+const id = "a25f0";
+const getNextId = (id) => id + 1;
+```
+
+Pas de souci, n'est-ce pas ?
+
+Seulement, si on regarde le résultat... 
+```ts
+const id = "a25f0";
+getNextId(id) // "a25f01" au lieu de "a25f1" ! 👎👎
+```
+
+L'id a été traité comme un string, et donc `id + 1` a été traité comme une concaténation au lieu d'une addition 🤨
+
+Il aurait fallu pouvoir s'assurer que `getNextId` prend bien un nombre en paramètre, et c'est là que TypeScript se rend utile.
+
+Il suffit d'ajouter une petite annotation pour indiquer le type.
+```ts
+const getNextId = (id: number) => id + 1; // le paramètre "id" est de type "number"  
+```
+
+On peut même aller plus loin et indiquer le type du retour de la fonction !
+```ts
+const getNextId = (id: number): number => id + 1; // la fonction renvoie un "number"
+```
+
+Retournons à notre id : 
+```ts
+const id: number = "a25f0"; // Error: Type 'string' is not assignable to type 'number'. ts(2322) 
+```
+On voit directement le problème ici : le contenu de la variable id n'est pas du bon type !
+
+On peut donc corriger le problème en le convertissant en nombre et continuer à coder en toute sérénité :)
+```ts
+const id: number = parseInt("a25f0", 16); // no problemo !
+const getNextId = (id: number): number => id + 1;
+
+getNextId(id); // a25f1 👍👍
+```
+
+[Exemple du code sur Codesandbox.io](https://codesandbox.io/s/cours-typescript-9433qz?file=/src/index.ts)
+
+### Compiler TypeScript
+On ne peut pas exécuter directement du TypeScript : il faut le compiler en JavaScript avec de le faire exécuter.
+
+Il existe de nombreux outils (Webpack + Babel, `tsc` puis `node`...), mais dans le cadre de Node, le plus simple est [ts-node](https://www.npmjs.com/package/ts-node).
+
+Il se charge de compiler puis d'exécuter un fichier `.ts`, de la même manière que node exécute un `.js`.
+
+Pour développer, il existe une version intégrant `nodemon` : [ts-node-dev](https://www.npmjs.com/package/ts-node).
+
+```json5
+// package.json
+{
+  "scripts": {
+    "dev": "tsnd index.ts",
+    "prod": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.2",
+    // ...
+  }
+}
+```
+
+### Les types des librairies importées
+Bien plus que le code de notre équipe, il est intéressant d'avoir des types sur les librairies qu'on installe depuis npm 😉
+
+Certaines sont écrites en TS, et donc les types sont déjà intégrés tels quels. Super !
+![](typescript/integrated_ts.png)
+
+Pour d'autres, il est nécessaire de les récupérer via un autre package (typiquement avec `npm i -D @types/<nom_de_la_lib>`).
+![](typescript/external_ts.png)
+
+Pour info, @types vient du dépôt [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) qui est open source !
 
 # Tester avec Jest et Supertest
 
