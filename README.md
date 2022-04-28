@@ -67,7 +67,7 @@ server.listen(port, hostname, () => {
 ```
 
 # Ajouter un package via npm
-Dans un premier temps, on ajoute la 'notion' de package dans le projet.  
+Dans un premier temps, on ajoute la 'notion' de package dans le projet.
 ```bash
 npm init
 ```
@@ -146,7 +146,7 @@ Il convient très souvent d'avoir un système permettant d'authentifier les appe
 
 Un token  JWT c'est ça : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3R1cGRhdGU0QGdtYWlsLmNvbSIsImlkIjo0LCJpYXQiOjE2NTExNDY0NjIsImV4cCI6MTY1MTE1MDA2Mn0.Fd_GSMptgZNL9BbeASs3mIhL0gvPCDWGkJyXw60sW9s
 
-Il contient des informations encodées qui peuvent être décodées mais une autre partie ne peut l'être qu'avec la clé de chiffrement qui a permis sa génération. 
+Il contient des informations encodées qui peuvent être décodées mais une autre partie ne peut l'être qu'avec la clé de chiffrement qui a permis sa génération.
 
 C'est avec cette clé stockées sur le serveur qu'on pourra valider un token.
 
@@ -176,17 +176,8 @@ module.exports = {
 Ne pas oublier d'ajouter le secret dans le .env !
 
 
-Ensuite, il suffit d'ajouter à la racine de votre projet les lignes suivantes :
-```js
-var express = require('express');
-var cors = require('cors');
-var app = express();
-
-app.use(cors());
-```
-
 Au niveau de l'application, on ajoute une route qui va nous permettre de générer un token JWT.
-L'implementation de cette route diffère selon vos cas d'usages mais peut être comme ceci: 
+L'implementation de cette route diffère selon vos cas d'usages mais peut être comme ceci:
 
 ```js
 // routes/index.js
@@ -269,6 +260,15 @@ const auth = (req, res, next) => {
 module.exports = auth;
 ```
 
+On exporte le middleware dans le fichier principal
+
+```js
+const authJwt = require("./auth.middleware");
+module.exports = {
+    authJwt,
+};
+```
+
 Et voilà, on a notre middleware d'authentification.
 
 ## Ajouter le middleware dans les routes
@@ -279,7 +279,7 @@ TIP : Si vous utilisez plusieurs middelwares, il faut les ajouter dans un tablea
 
 Dans le cas ci-dessous, on veut récupérer les informations d'un utilisateur avec un id. On ne peut le faire qu'en étant cet utilisateur.
 
-On va donc grâce au middleware pouvoir comparer les id utilisateurs de la base de donées et de celui connecté et donc valider l'autorisation d'accès à la ressource ! 
+On va donc grâce au middleware pouvoir comparer les id utilisateurs de la base de donées et de celui connecté et donc valider l'autorisation d'accès à la ressource !
 ```js
 
 router.get("/:id", authJwt, async (req, res) => {
