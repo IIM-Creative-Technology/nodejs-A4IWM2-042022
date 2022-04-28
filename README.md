@@ -13,6 +13,17 @@ Cours Node.js avec la classe A4 IWM M2
       <a href="#faire-son-serveur">Faire son serveur</a>
     </li>
     <li>
+      <a href="#dockeriser-son-application">Dockeriser son application</a>
+      <ul>
+        <li><a href="#architecture-du-projet">Architecture du projet</a></li>
+        <li><a href="#conteneur-base-de-données">Conteneur base de données</a></li>
+        <li><a href="#conteneur-serveur">Conteneur serveur</a></li>        
+        <li><a href="#fichier-env">Fichier .env</a></li>        
+        <li><a href="#en-production">En production</a></li>       
+        <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
+      </ul>
+    </li>
+    <li>
       <a href="#ajouter-un-package-via-npm">Ajouter un package via npm</a>
     </li>
     <li>
@@ -25,18 +36,24 @@ Cours Node.js avec la classe A4 IWM M2
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
     </li>
     <li>
-      <a href="#dockeriser-son-application">Dockeriser son application</a>
+      <a href="#utiliser-le-body-parser">Utiliser le body-parser</a>
+    </li>
+    <li>
+      <a href="#déployer-son-projet-node">Déployer son projet node</a>
       <ul>
-        <li><a href="#architecture-du-projet">Architecture du projet</a></li>
-        <li><a href="#conteneur-base-de-données">Conteneur base de données</a></li>
-        <li><a href="#conteneur-serveur">Conteneur serveur</a></li>        
-        <li><a href="#fichier-env">Fichier .env</a></li>        
-        <li><a href="#en-production">En production</a></li>       
-        <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
+        <li><a href="#heroku">Heroku</a></li>
+            <ul>
+                <li><a href="#création-de-vos-environnements">Création de vos environnements</a></li>
+                <li><a href="#liaison-du-projet-avec-heroku">Liaison du projet avec Heroku</a></li>        
+                <li><a href="#déployer-votre-projet">Déployer votre projet</a></li>   
+            </ul>
       </ul>
     </li>
     <li>
       <a href="#se-connecter-à-la-bdd-avec-sequelize">Se connecter à la BDD avec Sequelize</a>
+    </li>
+     <li>
+      <a href="#intégrer-typescript">Intégrer TypeScript</a>
     </li>
   </ol>
 </details>
@@ -93,7 +110,6 @@ server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
 ```
-
 
 # Dockeriser son application
 On peut conteneuriser son application pour éviter d'avoir à installer tout sur son ordinateur, et optionnellement faciliter le déploiement.
@@ -348,6 +364,7 @@ const upload = multer({
 app.post('/upload', (req, res) => {
   upload(req, res)
 });
+```
 
 # Enlever les erreurs CORS
 
@@ -443,6 +460,54 @@ const startServer = async () => {
 
 startServer();
 ```
+
+# Utiliser le body parser
+
+## L'erreur "req.body is undefined"
+
+Lorsqu'il vous arrive d'envoyer de la donnée via une méthode POST, le serveur reçoit le contenu de celle-ci via le paramètre ```(req)```.
+Précision : ```req``` fait ici référence à la requête envoyée par le client.
+
+```js
+app.post('/user', (req, res) => {
+    console.log("Reponse : ", req.body)
+```
+
+Pour que le serveur puisse lire le contenu de de la requête, nous devons accèder à son body via ```req.body```.
+
+Cependant, sur un serveur express, il se peut que votre donnée soit "undefined" lorsque vous essayez de ```console.log()``` celle-ci.
+
+## Résoudre cette erreur
+
+Cette erreur peut être résolu en utilisant le middleware ```body-parser```.
+Celui-ci va parser notre réponse. En outre, le ```body-parser``` va extraire le body de la requête reçue et l'exposer sur le ```req.body```
+
+## Installation
+
+```
+npm install body-parser --save
+```
+
+## Déclaration
+
+```js
+const bodyParser = require('body-parser');
+```
+Mettez ces deux ligne au début de votre code :
+```js
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+```
+
+## Mise à jour
+
+Cette méthode est surtout utile si vous utilisez une version d'Express.js inférieure à Express 4.
+
+Depuis Express 4, il est possible de fonctionner comme ceci :
+
+```js
+app.use(express.json());
+```
 # Déployer son projet node
 
 ## Heroku
@@ -507,3 +572,86 @@ Vous pouvez obtenir des logs en direct de l'état de votre application grâce au
 heroku logs --tail
 ```
 
+
+## Intégrer TypeScript
+[TypeScript](https://typescriptlang.org/) est un sur-langage de JavaScript dont le but est de permettre de typer les éléments JS. Il est extrêmement répandu dans l'écosystème JavaScript de nos jours. 
+
+### Typer son code
+Prenons un exemple simple : soit variable `id` étant un nombre hexadécimal, et, pour récupérer l'id suivant, on l'incrémente.
+
+```ts
+const id = "a25f0";
+const getNextId = (id) => id + 1;
+```
+
+Pas de souci, n'est-ce pas ?
+
+Seulement, si on regarde le résultat... 
+```ts
+const id = "a25f0";
+getNextId(id) // "a25f01" au lieu de "a25f1" ! 👎👎
+```
+
+L'id a été traité comme un string, et donc `id + 1` a été traité comme une concaténation au lieu d'une addition 🤨
+
+Il aurait fallu pouvoir s'assurer que `getNextId` prend bien un nombre en paramètre, et c'est là que TypeScript se rend utile.
+
+Il suffit d'ajouter une petite annotation pour indiquer le type.
+```ts
+const getNextId = (id: number) => id + 1; // le paramètre "id" est de type "number"  
+```
+
+On peut même aller plus loin et indiquer le type du retour de la fonction !
+```ts
+const getNextId = (id: number): number => id + 1; // la fonction renvoie un "number"
+```
+
+Retournons à notre id : 
+```ts
+const id: number = "a25f0"; // Error: Type 'string' is not assignable to type 'number'. ts(2322) 
+```
+On voit directement le problème ici : le contenu de la variable id n'est pas du bon type !
+
+On peut donc corriger le problème en le convertissant en nombre et continuer à coder en toute sérénité :)
+```ts
+const id: number = parseInt("a25f0", 16); // no problemo !
+const getNextId = (id: number): number => id + 1;
+
+getNextId(id); // a25f1 👍👍
+```
+
+[Exemple du code sur Codesandbox.io](https://codesandbox.io/s/cours-typescript-9433qz?file=/src/index.ts)
+
+### Compiler TypeScript
+On ne peut pas exécuter directement du TypeScript : il faut le compiler en JavaScript avec de le faire exécuter.
+
+Il existe de nombreux outils (Webpack + Babel, `tsc` puis `node`...), mais dans le cadre de Node, le plus simple est [ts-node](https://www.npmjs.com/package/ts-node).
+
+Il se charge de compiler puis d'exécuter un fichier `.ts`, de la même manière que node exécute un `.js`.
+
+Pour développer, il existe une version intégrant `nodemon` : [ts-node-dev](https://www.npmjs.com/package/ts-node).
+
+```json5
+// package.json
+{
+  "scripts": {
+    "dev": "tsnd index.ts",
+    "prod": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.2",
+    // ...
+  }
+}
+```
+
+### Les types des librairies importées
+Bien plus que le code de notre équipe, il est intéressant d'avoir des types sur les librairies qu'on installe depuis npm 😉
+
+Certaines sont écrites en TS, et donc les types sont déjà intégrés tels quels. Super !
+![](typescript/integrated_ts.png)
+
+Pour d'autres, il est nécessaire de les récupérer via un autre package (typiquement avec `npm i -D @types/<nom_de_la_lib>`).
+![](typescript/external_ts.png)
+
+Pour info, @types vient du dépôt [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) qui est open source !
