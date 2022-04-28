@@ -35,6 +35,9 @@ Cours Node.js avec la classe A4 IWM M2
         <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
       </ul>
     </li>
+    <li>
+      <a href="#se-connecter-à-la-bdd-avec-sequelize">Se connecter à la BDD avec Sequelize</a>
+    </li>
   </ol>
 </details>
 
@@ -359,3 +362,71 @@ var app = express();
 
 app.use(cors());
 ```
+
+# Se connecter à la BDD avec Sequelize
+
+Il faut dans un premier temps initiliser les variables d'environnement à propos de votre BDD (fichier => *.env*)
+```js
+DB_HOST="XXXXXX"
+DB_NAME="XXXXXX"
+DB_USER="XXXXXX"
+DB_PORT=5432
+DB_PASSWORD="XXXXXX"
+```
+Ensuite, récupérer les varaibles d'environnement et initialiser la connexion à la BDD avec Sequelize (fichier => *database*)
+```js
+const Sequelize = require('sequelize');
+require('dotenv').config();
+
+const {
+  DB_HOST,
+  DB_NAME,
+  DB_USER,
+  DB_PORT,
+  DB_PASSWORD,
+} = process.env;
+
+const sequelizeInstance = new Sequelize({
+  database: DB_NAME,
+  username: DB_USER,
+  password: DB_PASSWORD,
+  host: DB_HOST,
+  port: DB_PORT,
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+});
+
+module.exports= {
+  sequelizeInstance,
+};
+```
+
+Puis s'authentifier à la BDD  lors de la création du serveur pour pouvoir insérer des données (fichier *index.js*)
+```js
+const http = require('http');
+const express = require('express');
+const {sequelizeInstance} = require('./database');
+
+const app = express();
+const server = http.createServer(app);
+
+const startServer = async () => {
+  try {
+    await sequelizeInstance.authenticate();
+    console.log('Connection with database has been established successfully.');
+    server.listen(port, () => {
+      console.log(`Server listen on http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+};
+
+startServer();
+```
+
