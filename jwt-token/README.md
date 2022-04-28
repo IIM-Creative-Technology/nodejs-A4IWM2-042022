@@ -5,13 +5,13 @@ JWT (JSON Web Token) sert à transmettre en toute sécurité des informations so
 
 ### Comment est généré un jeton JWT ?
 
-Pour générer un jeton JWT, on utilisera souvent une donnée de l'utilisateur en question (comme le mail ou le username), un algorithme de chiffrage (type HS256) et une durée de validité. Pour une question de sécurité, on peut ajouter d'autres options comme une private key.
+Pour générer un jeton JWT, on utilisera souvent une donnée de l'utilisateur en question (comme le mail ou le username, avec l'id), un algorithme de chiffrage (type HS256) et une durée de validité. Pour une question de sécurité, on peut ajouter d'autres options comme une private key.
 
 ### Comment une API recupère-t-elle un jeton JWT ?
 
 Le token est souvent stocké dans le cache ou les cookies du client. Lors d'un appel API ce dernier sera récupéré dans le header ou cookie de la requête.
 
-Il sera ensuite vérifié pour autoriser ou non l'accès.
+Il sera ensuite vérifié pour autoriser ou non l'accès, ainsi qu'orchestrer la récupération de l'utilisateur par exemple.
 
 ### Le refresh quoi ?
 
@@ -22,13 +22,13 @@ Lorsque le token principal a expiré, on stop la requête en cours et on check s
 ## Node.js et JWT
 
 Pour utiliser JWT dans Node.js avec express, nous aurons besoin de 2 packages.
-- jsonwebtoken
+- jsonwebtoken :
 ```npm i jsonwebtoken```
-- cookie-parser
+- cookie-parser :
 ```npm i cookie-parser```
 
 Nous allons créer deux fichiers :
-### Service
+### Service ***(./services/authentication/authenticationService.js)***
 ```js
 const jwt = require("jsonwebtoken")
 
@@ -82,7 +82,7 @@ module.exports = AuthenticationService;
 ```
 
 
-### Middleware
+### Middleware ***(./middleware/authentication.js)***
 ```js
 const jwt = require("jsonwebtoken");
 const AuthenticationService = require("../services/authentication/authenticationToken");
@@ -106,7 +106,8 @@ class AuthenticationMiddleware{
 module.exports = AuthenticationMiddleware;
 ```
 
-### Serveur
+### Serveur ***(app.js)***
+
 Nous allons ensuite pouvoir initialiser notre serveur :
 ```js
 const express = require("express");
