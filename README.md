@@ -7,7 +7,7 @@ Cours Node.js avec la classe A4 IWM M2
   <summary><h2 style="display: inline-block">Table des matières</h2></summary>
   <ol>
     <li>
-      <a href="#prerequis">Prérequis</a>
+      <a href="#prérequis">Prérequis</a>
     </li>
     <li>
       <a href="#faire-son-serveur">Faire son serveur</a>
@@ -19,13 +19,55 @@ Cours Node.js avec la classe A4 IWM M2
       <a href="#les-exports-en-javascript">Les exports en javascript</a>
     </li>
     <li>
+      <a href="#upload-une-image-avec-multer">Upload une image avec Multer</a>
+    </li>
+    <li>
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
+    </li>
+    <li>
+      <a href="#utiliser-le-body-parser">Utiliser le body-parser</a>
+    </li>
+    <li>
+      <a href="#dockeriser-son-application">Dockeriser son application</a>
+      <ul>
+        <li><a href="#architecture-du-projet">Architecture du projet</a></li>
+        <li><a href="#conteneur-base-de-données">Conteneur base de données</a></li>
+        <li><a href="#conteneur-serveur">Conteneur serveur</a></li>        
+        <li><a href="#fichier-env">Fichier .env</a></li>        
+        <li><a href="#en-production">En production</a></li>       
+        <li><a href="#lancer-les-conteneurs">Lancer les conteneurs</a></li>       
+      </ul>
+    </li>
+    <li>
+      <a href="#déployer-son-projet-node">Déployer son projet node</a>
+      <ul>
+        <li><a href="#heroku">Heroku</a></li>
+            <ul>
+                <li><a href="#création-de-vos-environnements">Création de vos environnements</a></li>
+                <li><a href="#liaison-du-projet-avec-heroku">Liaison du projet avec Heroku</a></li>        
+                <li><a href="#déployer-votre-projet">Déployer votre projet</a></li>   
+            </ul>
+      </ul>
     </li>
     <li>
       <a href="#intégrer-typescript">Intégrer TypeScript</a>
     </li>
   </ol>
 </details>
+
+
+<details>
+  <summary><h2 style="display: inline-block">Autres documentations</h2></summary>
+  <ol>
+    <li>
+      <a href="/course-package-npm">NPM et les packages</a>
+    </li>
+    <li>
+      <a href="/best-practices-git">Bonnes pratiques git</a>
+    </li>
+  </ol>
+</details>
+
 
 # Prérequis
 
@@ -65,6 +107,202 @@ server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
 ```
+
+# Utiliser le body parser
+
+## L'erreur "req.body is undefined"
+
+Lorsqu'il vous arrive d'envoyer de la donnée via une méthode POST, le serveur reçoit le contenu de celle-ci via le paramètre ```(req)```.
+Précision : ```req``` fait ici référence à la requête envoyée par le client.
+
+```js
+app.post('/user', (req, res) => {
+    console.log("Reponse : ", req.body)
+```
+
+Pour que le serveur puisse lire le contenu de de la requête, nous devons accèder à son body via ```req.body```.
+
+Cependant, sur un serveur express, il se peut que votre donnée soit "undefined" lorsque vous essayez de ```console.log()``` celle-ci.
+
+## Résoudre cette erreur
+
+Cette erreur peut être résolu en utilisant le middleware ```body-parser```.
+Celui-ci va parser notre réponse. En outre, le ```body-parser``` va extraire le body de la requête reçue et l'exposer sur le ```req.body```
+
+## Installation
+
+```
+npm install body-parser --save
+```
+
+## Déclaration
+
+```js
+const bodyParser = require('body-parser');
+```
+Mettez ces deux ligne au début de votre code :
+```js
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+```
+
+## Mise à jour 
+
+Cette méthode est surtout utile si vous utilisez une version d'Express.js inférieure à Express 4. 
+
+Depuis Express 4, il est possible de fonctionner comme ceci :
+
+```js
+app.use(express.json());
+```
+
+
+# Dockeriser son application
+On peut conteneuriser son application pour éviter d'avoir à installer tout sur son ordinateur, et optionnellement faciliter le déploiement.
+
+Il y a pour l'instant 2 parties dans l'application, et donc 2 conteneurs. On peut utiliser un `docker-compose.yml` pour gérer ces conteneurs.
+
+## Architecture du projet
+Je propose ici une certaine architecture pour le projet, mais soyez libres de l'adapter à votre goût ! Il faudra juste changer les chemins correspondants dans `docker-compose.yml`.
+
+![](architecture_du_projet.png)
+
+## Conteneur base de données
+Une simple image postgres importée de dockerhub est suffisante ici.
+
+```yml
+# docker/docker-compose.yml
+services:
+  db:
+    image: postgres:14.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - ../db:/var/lib/postgresql/data
+    networks:
+      - <nom_du_réseau_personnalisé> # pour que les conteneurs puissent discuter entre eux
+```
+
+## Conteneur serveur
+Il y a besoin de commandes supplémentaires pour lancer le serveur : c'est pourquoi on va écrire un Dockerfile.
+
+```yml
+# docker/docker-compose.yml
+services:
+  server:
+    depends_on:
+      - db
+    build:
+      context: ../app/ # avec quels fichiers on initialise le conteneur
+      dockerfile: ../docker/dev/Dockerfile # où se trouve le Dockerfile, à partir du contexte
+    restart: unless-stopped
+    environment:
+      CONNECTION_STRING: "postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_DATABASE}"
+      SERVER_PORT: ${SERVER_PORT}
+      NODE_ENV: dev
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - ../app/src:/app/src # pas app/ en entier pour éviter d'écraser d'écraser node_modules dans le conteneur
+    networks:
+      - <nom_du_réseau_personnalisé>
+```
+
+```dockerfile
+# docker/dev/Dockerfile
+FROM node:18-alpine3.14
+
+RUN mkdir /app
+WORKDIR /app
+# Install the dependencies
+COPY package.json ./
+RUN npm ci
+# Copy the source files
+COPY . .
+
+# Start the server
+EXPOSE ${SERVER_PORT}
+CMD npm run dev
+# ou npx nodemon <nom_du_fichier_principal> si vous n'avez pas de script npm pour lancer le serveur en dev
+```
+
+## Fichier env
+Les variables d'environnement sont placées dans un fichier `.env` lu automatiquement par `docker-compose`.
+
+```env
+DB_USER=<nom_d'utilisateur>
+DB_PASSWORD=<mot_de_passe>
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=<nom_de_la_bdd>
+SERVER_PORT=3000
+```
+
+## En production
+La commande pour lancer le serveur en production est différente de celle en développement, c'est pourquoi il y a un `Dockerfile` et un `docker-compose.yml` différents pour cet environnement.
+
+```yml
+# docker/production.yml
+version: "3.4"
+
+services:
+  server:
+    build:
+      context: ../app/
+      dockerfile: ../docker/prod/Dockerfile
+    environment:
+      NODE_ENV: production
+```
+```dockerfile
+FROM node:18-alpine3.14
+
+RUN mkdir /app
+WORKDIR /app
+# Install the dependencies
+COPY package.json ./
+RUN npm install --omit dev
+# Copy the source files
+COPY . .
+
+# Start the server
+EXPOSE ${SERVER_PORT}
+CMD npm run start
+```
+
+## Lancer les conteneurs
+
+### Développement
+Pour toutes ces commandes, il faut se placer dans le dossier `/docker`.
+
+En développement :
+`docker-compose up -d`
+
+On peut ensuite accéder au serveur depuis l'extérieur du conteneur à l'adresse : `localhost:3000`
+
+Après avoir installé un module npm via `npm i`, reconstruire les conteneurs en ligne de commande avec :
+`docker-compose up -d --build`
+
+Ou supprimer le conteneur avec Docker Desktop :
+
+![](docker_desktop_delete.png)
+
+Puis relancer normalement avec `up`.
+
+### Logs
+Pour voir les logs, on peut soit utiliser la ligne de commande : `docker-compose logs -f <server ou db>`
+
+Soit passer par Docker Desktop :
+![](docker_desktop_logs.png)
+
+### Production
+En production, idem, mais on ajoute la configuration pour la prod :
+`docker-compose -f docker-compose.yml -f production.yml up -d`
+
 
 # Ajouter un package via npm
 Dans un premier temps, on ajoute la 'notion' de package dans le projet.  
@@ -112,6 +350,67 @@ Il est maintenant possible d'utiliser les fonctions exportés dans le fichier im
 functions.returnHelloWorld()
 ```
 
+# Upload une image avec Multer
+
+Pour upload une image via un `<input type="file" />`, il faut installer le package [Multer](https://www.npmjs.com/package/multer) dans votre projet. Notons que package `express` doit déjà être installé au sein du projet pour le bon fonctionnement de Multer.
+```
+npm i multer
+``` 
+
+Dans votre rendu HTML, créer un formulaire 
+```html
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" name="myFile">
+  <button type="submit">Submit</button>
+</form>
+```
+
+Puis au sein de votre arborescence, créer un dossier où seront stockées les images
+```
+mkdir -p public/uploads/
+```
+
+Après avoir servi le dossier de destination statique dans votre fichier javascript principal, indiquer le path de stockage des images ainsi que leur nom
+```js
+app.use(express.static('./public'));
+
+const storage = multer.diskStorage({
+  destination: './public/uploads/',
+  filename: function(req, file, cb){
+    cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+```
+
+Créer une méthode de validation du fichier, notamment pour l'extension de l'image
+```js
+function checkFileType(file, cb){
+  const filetypes = /jpeg|jpg|png|gif/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  if(mimetype && extname){
+    return cb(null,true);
+  } else {
+    cb('Error: Images Only!');
+  }
+}
+```
+
+Pour finir, créer une méthode d'upload et l'appeler au submit du formulaire 
+```js
+const upload = multer({
+  storage: storage,
+  limits:{fileSize: 1000000},
+  fileFilter: function(req, file, cb){
+    checkFileType(file, cb);
+  }
+}).single('myFile');
+
+app.post('/upload', (req, res) => {
+  upload(req, res)
+});
+
 # Enlever les erreurs CORS
 
 ## Qu'est-ce qu'une erreur CORS
@@ -139,6 +438,71 @@ var app = express();
 
 app.use(cors());
 ```
+
+# Déployer son projet node
+
+## Heroku
+
+### Création de vos environnements
+
+Heroku est une plateforme permettant le déploiement d'applications web. Elle est connu pour être l'une des plateformes la plus simple d'utilisation pour déployer un projet web.
+
+Dans cette partie nous allons voir le déploiement d'un projet node sur Heroku et nous allons nous baser sur la méthode de déploiement utilisant heroku-cli.
+
+Dans un premier temps il vous faudra faire une pipeline sur votre dashboard Heroku. Vous n'avez pas besoin de lié votre pipeline à votre git si vous utilisez heroku-cli.
+
+Vous allez par la suite devoir créer une application dans votre pipeline. Il s'agira de vos environnement. 
+
+N'oubliez pas d'installer le buildpack node à votre application dans les Settings de cette-derniére. 
+
+### Liaison du projet avec Heroku
+
+Maintenant vous allez devoir installer heroku-cli :
+
+MacOS :
+
+```bash
+w tap heroku/brew && brew install heroku
+```
+
+Windows :
+
+<a href="https://cli-assets.heroku.com/heroku-x64.exe">https://cli-assets.heroku.com/heroku-x64.exe</a>
+
+Linux (Ubuntu) :
+
+```bash
+curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+```
+
+Vous allez maintenant devoir vous connecter à votre compte Heroku et lier votre projet à votre application Heroku :
+
+```bash
+heroku login
+heroku git:remote -a <nom_de_votre_app>
+```
+
+### Déployer votre projet
+
+Créer un fichier Procfile à la racine de votre projet. Ce fichier va être le point d'entré de votre application. Il doit contenir la méthode de lancement de votre application. Exemple :
+
+```
+web: node app.js
+```
+
+Avant de déployer votre application veillez à bien avoir paramétré les variables d'environnement de votre application (Settings > Reveal Config Var)
+Vous pouvez maintenant déployer votre application :
+
+```bash
+git push heroku main
+```
+
+Vous pouvez obtenir des logs en direct de l'état de votre application grâce aux logs heroku. Pour récupérer les logs il vous suffit de faire :
+
+```bash
+heroku logs --tail
+```
+
 
 ## Intégrer TypeScript
 [TypeScript](https://typescriptlang.org/) est un sur-langage de JavaScript dont le but est de permettre de typer les éléments JS. Il est extrêmement répandu dans l'écosystème JavaScript de nos jours. 
