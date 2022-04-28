@@ -21,6 +21,9 @@ Cours Node.js avec la classe A4 IWM M2
     <li>
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
     </li>
+    <li>
+      <a href="#utiliser-le-body-parser">Utiliser le body-parser</a>
+    </li>
   </ol>
 </details>
 
@@ -135,4 +138,52 @@ var cors = require('cors');
 var app = express();
 
 app.use(cors());
+```
+
+# Utiliser le body parser
+
+## L'erreur "req.body is undefined"
+
+Lorsqu'il vous arrive d'envoyer de la donnée via une méthode POST, le serveur reçoit le contenu de celle-ci via le paramètre ```(req)```.
+Précision : ```req``` fait ici référence à la requête envoyée par le client.
+
+```js
+app.post('/user', (req, res) => {
+    console.log("Reponse : ", req.body)
+```
+
+Pour que le serveur puisse lire le contenu de de la requête, nous devons accèder à son body via ```req.body```.
+
+Cependant, sur un serveur express, il se peut que votre donnée soit "undefined" lorsque vous essayez de ```console.log()``` celle-ci.
+
+## Résoudre cette erreur
+
+Cette erreur peut être résolu en utilisant le middleware ```body-parser```.
+Celui-ci va parser notre réponse. En outre, le ```body-parser``` va extraire le body de la requête reçue et l'exposer sur le ```req.body```
+
+## Installation
+
+```
+npm install body-parser --save
+```
+
+## Déclaration
+
+```js
+const bodyParser = require('body-parser');
+```
+Mettez ces deux ligne au début de votre code :
+```js
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+```
+
+## Mise à jour 
+
+Cette méthode est surtout utile si vous utilisez une version d'Express.js inférieure à Express 4. 
+
+Depuis Express 4, il est possible de fonctionner comme ceci :
+
+```js
+app.use(express.json());
 ```
