@@ -7,7 +7,7 @@ Cours Node.js avec la classe A4 IWM M2
   <summary><h2 style="display: inline-block">Table des matières</h2></summary>
   <ol>
     <li>
-      <a href="#prerequis">Prérequis</a>
+      <a href="#prérequis">Prérequis</a>
     </li>
     <li>
       <a href="#faire-son-serveur">Faire son serveur</a>
@@ -40,6 +40,20 @@ Cours Node.js avec la classe A4 IWM M2
     </li>
   </ol>
 </details>
+
+
+<details>
+  <summary><h2 style="display: inline-block">Autres documentations</h2></summary>
+  <ol>
+    <li>
+      <a href="/course-package-npm">NPM et les packages</a>
+    </li>
+    <li>
+      <a href="/best-practices-git">Bonnes pratiques git</a>
+    </li>
+  </ol>
+</details>
+
 
 # Prérequis
 
@@ -428,5 +442,67 @@ const startServer = async () => {
 };
 
 startServer();
+# Déployer son projet node
+
+## Heroku
+
+### Création de vos environnements
+
+Heroku est une plateforme permettant le déploiement d'applications web. Elle est connu pour être l'une des plateformes la plus simple d'utilisation pour déployer un projet web.
+
+Dans cette partie nous allons voir le déploiement d'un projet node sur Heroku et nous allons nous baser sur la méthode de déploiement utilisant heroku-cli.
+
+Dans un premier temps il vous faudra faire une pipeline sur votre dashboard Heroku. Vous n'avez pas besoin de lié votre pipeline à votre git si vous utilisez heroku-cli.
+
+Vous allez par la suite devoir créer une application dans votre pipeline. Il s'agira de vos environnement. 
+
+N'oubliez pas d'installer le buildpack node à votre application dans les Settings de cette-derniére. 
+
+### Liaison du projet avec Heroku
+
+Maintenant vous allez devoir installer heroku-cli :
+
+MacOS :
+
+```bash
+w tap heroku/brew && brew install heroku
+```
+
+Windows :
+
+<a href="https://cli-assets.heroku.com/heroku-x64.exe">https://cli-assets.heroku.com/heroku-x64.exe</a>
+
+Linux (Ubuntu) :
+
+```bash
+curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+```
+
+Vous allez maintenant devoir vous connecter à votre compte Heroku et lier votre projet à votre application Heroku :
+
+```bash
+heroku login
+heroku git:remote -a <nom_de_votre_app>
+```
+
+### Déployer votre projet
+
+Créer un fichier Procfile à la racine de votre projet. Ce fichier va être le point d'entré de votre application. Il doit contenir la méthode de lancement de votre application. Exemple :
+
+```
+web: node app.js
+```
+
+Avant de déployer votre application veillez à bien avoir paramétré les variables d'environnement de votre application (Settings > Reveal Config Var)
+Vous pouvez maintenant déployer votre application :
+
+```bash
+git push heroku main
+```
+
+Vous pouvez obtenir des logs en direct de l'état de votre application grâce aux logs heroku. Pour récupérer les logs il vous suffit de faire :
+
+```bash
+heroku logs --tail
 ```
 
