@@ -427,7 +427,7 @@ module.exports = {
 
 ```
 
-Ne pas oublier d'ajouter le secret dans le .env !
+Ne pas oublier d'ajouter le secret dans le .env ! (à placer à la racine du projet) 
 
 
 Au niveau de l'application, on ajoute une route qui va nous permettre de générer un token JWT.
