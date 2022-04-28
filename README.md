@@ -25,6 +25,7 @@ Cours Node.js avec la classe A4 IWM M2
       <a href="#enlever-les-erreurs-cors">Enlever les erreurs CORS</a>
     </li>
     <li>
+<<<<<<< HEAD
       <a href="#dockeriser-son-application">Dockeriser son application</a>
       <ul>
         <li><a href="#architecture-du-projet">Architecture du projet</a></li>
@@ -47,6 +48,9 @@ Cours Node.js avec la classe A4 IWM M2
     </li>
     <li>
       <a href="/best-practices-git">Bonnes pratiques git</a>
+=======
+      <a href="#ce-que-nous-avons-vu">Ce que nous avons vu</a>
+>>>>>>> 6a2d45d (docs(doc): Add seeing notions and link to go to it)
     </li>
   </ol>
 </details>
@@ -57,6 +61,36 @@ Cours Node.js avec la classe A4 IWM M2
 -   Un nordinateur
 -   Wordpad
 -   Node.js version 18
+
+## Ce que nous avons vu
+- [Node.js (version 18)](https://nodejs.org/en/)
+- [Express](https://expressjs.com/fr/)
+- [Socket.io](https://socket.io/fr/)
+- [npm](https://www.npmjs.com) / [yarn](https://yarnpkg.com/) / node_modules
+- Modules (import/require) / 
+  - Code local / librairies internes / externes
+  - export de modules
+- Serveur Node.js
+- Serveur express.js
+- req, res, app
+- Router
+- CRUD
+- Tests [(jest)](https://jestjs.io/fr/)
+- [Librairie HTTP Node.js](https://nodejs.org/api/http.html)
+- Hierarchisation du code
+- Bonnes pratiques
+  - Git [commitizen](https://github.com/commitizen/cz-cli)
+  - [Git flow](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/gitflow-workflow)
+  - Pull Request
+  - Review de code
+- Présentation à l'oral
+- Review (points blquants, objectifs atteints, tâches à faire)
+- Travailler en équipe
+- Liason BDD avec [PostgreSQL](https://www.postgresql.org/) ([Prisma](https://www.prisma.io/) / [Sequelize](https://sequelize.org/))
+- Authentification
+- Implémentation de [Docker](https://www.docker.com/)
+- Mise en production ([Vercel](https://vercel.com/), [Heroku](https://www.heroku.com/))
+- Changement de projet
 
 # Faire son serveur
 
