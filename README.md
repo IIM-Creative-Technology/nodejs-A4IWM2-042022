@@ -461,6 +461,76 @@ const startServer = async () => {
 startServer();
 ```
 
+# Implémenter des sockets
+
+## A quoi servent les sockets ?
+
+Les sockets permettent à un client et un serveur de communiquer de façon instantannée sans rechargement de page. Elles peuvent par exemple être utile pour créer un chat en ligne ou un jeu multijoueurs.
+
+## Comment implémenter les sockets ?
+
+Il faut d'abord installer le package socket.io: 
+```bash
+npm i socket.io
+```
+
+On peut ensuite initialiser les sockets dans notre fichier server :
+```js
+const express = require('express');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+
+// Create server
+const app = express();
+const httpsServer = createServer(app);
+const io = new Server(httpsServer);
+
+// Launch server
+httpsServer.listen(3000, () => {
+  console.log(`Example app listening on port 3000`);
+});
+
+// Socket IO
+io.on("connection", (socket) => {
+  // TODO - Socket listeners
+});
+```
+
+Avec cette initialisation, Socket.io crée automatiquement une route '/socket.io/socket.io.js'. On peut donc y connecter notre vue et initialiser notre client :
+```html
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io.connect('http://localhost:3000/');
+    // TODO - My code
+  </script>
+```
+
+On peut ensuite envoyer notre premier événement du client vers le serveur en continuant dans notre balise ```<script>``` :
+```js
+  const socket = io.connect('http://localhost:3000/');
+  socket.emit('msgToServer', 'Salut serveur !');
+```
+Ici, on envoie un événement appelé "msgToServer" avec un argument contenant notre message (on peut ajouter autant d'arguments qu'on le souhaite).
+
+Côté serveur, on va attendre cet événement et répondre au client en lui émettant un autre message.
+```js
+  // Socket IO
+  io.on("connection", (socket) => {
+    // Listeners
+    socket.on('msgToServer', (message) => {
+      console.log(message);
+      socket.emit('msgToClient', 'Salut client !');
+    });
+  });
+```
+
+Enfin, on va attendre ce nouvel événement chez notre client, toujours dans notre balise ```script``` :
+```js
+  socket.on('msgToClient', (message, message) => {
+    console.log(message);
+  });
+```
+
 # Utiliser le body parser
 
 ## L'erreur "req.body is undefined"
